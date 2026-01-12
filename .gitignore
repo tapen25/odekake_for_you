@@ -5,8 +5,9 @@
 __pycache__/
 *.pyc
 
-# Macが自動生成するファイル（不要）
+instance/
 .DS_Store
+trip.db
 
 # 仮想環境を作っている場合（もしあれば）
 venv/

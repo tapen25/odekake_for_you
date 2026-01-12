@@ -42,6 +42,24 @@
                 </div>
             </div>
 
+            <div class="form-row">
+                <div class="form-group">
+                    <label>いつ行きますか？</label>
+                    <input type="datetime-local" name="date_time" required>
+                </div>
+                <div class="form-group">
+                    <label>1人あたりの予算は？</label>
+                    <select name="budget">
+                        <option value="unspecified">指定なし</option>
+                        <option value="cheap">なるべく安く（〜2,000円）</option>
+                        <option value="3000">3,000円以内</option>
+                        <option value="5000" selected>5,000円以内</option>
+                        <option value="10000">10,000円以内</option>
+                        <option value="luxury">リッチに（1万円以上）</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>何人で行きますか？</label>
                 <select name="num_people" id="num_people" onchange="updateStations()">

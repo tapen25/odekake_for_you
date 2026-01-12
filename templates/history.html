@@ -3,24 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <title>検索履歴 - trip4U</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <style>
+        /* history.html専用スタイル */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #55d5d2;
+            color: #444;
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 40px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: #ff9e22;
+            border-bottom: 2px dashed #eee;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        .result-box {
+            background: #fff;
+            border: 2px solid #eee;
+            padding: 20px;
+            border-radius: 20px;
+            transition: transform 0.2s;
+            margin-bottom: 30px;
+        }
+        .result-box:hover {
+            border-color: #ffcc80;
+            transform: translateY(-3px);
+        }
+
+        .result-box h3 {
+            margin-top: 0;
+            color: #d35400;
+            font-size: 1.2em;
+        }
+
+        /* === 🌟 修正：ホームに戻るフローティングボタン === */
+        #home-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(90deg, #ff9e22 0%, #ff6b22 100%);
+            color: white;
+            
+            /* 文字（アイコン）の位置調整 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 30px; /* アイコンサイズ */
+            
+            box-shadow: 0 5px 15px rgba(255, 107, 34, 0.4);
+            z-index: 999;
+            transition: all 0.3s;
+        }
+
+        #home-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(255, 107, 34, 0.6);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h2>みんなの旅行プラン履歴 📖</h2>
-        <p>過去にAIが提案したプランの一覧です（DB連携中）</p>
+        <p style="text-align:center; margin-bottom:30px;">過去にAIが提案したプランの一覧です</p>
 
         {% for item in histories %}
-        <div class="result-box" style="margin-bottom: 30px;">
-            <h3>📍 {{ item.destination }} ({{ item.created_at.strftime('%Y/%m/%d') }})</h3>
-            <hr>
-            {{ item.plan_result | safe }}
+        <div class="result-box">
+            <h3>📍 {{ item.destination }} <span style="font-size:0.8em; color:#888;">({{ item.created_at.strftime('%Y/%m/%d') }})</span></h3>
+            <hr style="border:none; border-top:1px dashed #ddd; margin:15px 0;">
+            <div style="max-height: 300px; overflow-y: auto;">
+                {{ item.plan_result | safe }}
+            </div>
         </div>
         {% else %}
-            <p>まだ履歴がありません。</p>
+            <p style="text-align:center;">まだ履歴がありません。</p>
         {% endfor %}
-
-        <a href="/" class="btn-secondary">トップに戻る</a>
+        
+        <div style="height: 50px;"></div>
     </div>
+
+    <a href="/" id="home-btn" title="トップに戻る">🏠</a>
+
 </body>
 </html>
