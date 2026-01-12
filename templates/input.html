@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プラン作成</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='input_style.css') }}">
+    <script>
+        function updateStations() {
+            const num = document.getElementById('num_people').value;
+            const container = document.getElementById('stations_container');
+            container.innerHTML = ''; 
+
+            for (let i = 1; i <= num; i++) {
+                const div = document.createElement('div');
+                div.style.marginBottom = "10px";
+                div.innerHTML = `
+                    <input type="text" name="stations" placeholder="例：メンバー${i}の最寄駅" required style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 10px; font-size:14px;">
+                `;
+                container.appendChild(div);
+            }
+        }
+        window.onload = function() {
+            updateStations();
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>📝 計画を立てる</h2>
+
+        <form action="/result" method="POST">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>どこへ行きますか？</label>
+                    <input type="text" name="place" placeholder="例：鎌倉、海、カフェ" required>
+                </div>
+                <div class="form-group">
+                    <label>誰と行きますか？</label>
+                    <input type="text" name="partner" placeholder="例：友達、家族、恋人" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>何人で行きますか？</label>
+                <select name="num_people" id="num_people" onchange="updateStations()">
+                    <option value="1">1人</option>
+                    <option value="2" selected>2人</option>
+                    <option value="3">3人</option>
+                    <option value="4">4人</option>
+                    <option value="5">5人以上</option>
+                </select>
+                
+                <div id="stations_container" style="margin-top:15px; background:#f0ffff; padding:15px; border-radius:15px;">
+                    </div>
+            </div>
+
+            <h3>✨ こだわり条件</h3>
+
+            <div class="form-group">
+                <label>〈年齢・属性〉</label>
+                <div class="tag-box">
+                    <label class="tag"><input type="checkbox" name="attribute" value="10-20"><span>10〜20代前半</span></label>
+                    <label class="tag"><input type="checkbox" name="attribute" value="20-30"><span>20代後半〜30代前半</span></label>
+                    <label class="tag"><input type="checkbox" name="attribute" value="30"><span>30代後半</span></label>
+                    <label class="tag"><input type="checkbox" name="attribute" value="adult"><span>40代以上</span></label>
+                    <label class="tag"><input type="checkbox" name="attribute" value="student"><span>大学生</span></label>
+                    <label class="tag"><input type="checkbox" name="attribute" value="circle"><span>サークル</span></label>
+                </div>
+                <input type="text" name="attribute_other" class="other-input" placeholder="その他（自由記入）">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>〈用途〉</label>
+                    <div class="tag-box">
+                        <label class="tag"><input type="checkbox" name="purpose" value="girls"><span>女子会</span></label>
+                        <label class="tag"><input type="checkbox" name="purpose" value="date"><span>デート</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>〈交通手段〉</label>
+                    <div class="tag-box">
+                        <label class="tag"><input type="checkbox" name="access" value="train"><span>電車</span></label>
+                        <label class="tag"><input type="checkbox" name="access" value="walk"><span>徒歩</span></label>
+                        <label class="tag"><input type="checkbox" name="access" value="car"><span>車</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>〈移動のこだわり〉</label>
+                <div class="tag-box">
+                    <label class="mini-tag"><input type="checkbox" name="mobility[]" value="乗り換え少なめ"><span>乗り換え少なめ</span></label>
+                    <label class="mini-tag"><input type="checkbox" name="mobility[]" value="徒歩10分以内"><span>徒歩10分以内</span></label>
+                    <label class="mini-tag"><input type="checkbox" name="mobility[]" value="景色を楽しみたい"><span>景色を楽しみたい</span></label>
+                    <label class="mini-tag"><input type="checkbox" name="mobility[]" value="時間優先"><span>時間優先</span></label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>〈食事〉</label>
+                <div class="tag-box" style="margin-bottom:10px;">
+                    <label class="tag"><input type="radio" name="meal" value="あり"><span>あり</span></label>
+                    <label class="tag"><input type="radio" name="meal" value="なし"><span>なし</span></label>
+                </div>
+                <input type="text" name="meal_genre" class="other-input" placeholder="ジャンル指定（任意）">
+            </div>
+
+            <div class="form-group">
+                <label>〈雰囲気〉</label>
+                <div class="tag-box">
+                    <label class="tag"><input type="checkbox" name="vibes" value="romantic"><span>ロマンチック</span></label>
+                    <label class="tag"><input type="checkbox" name="vibes" value="active"><span>アクティブ</span></label>
+                    <label class="tag"><input type="checkbox" name="vibes" value="insta"><span>インスタ映え</span></label>
+                    <label class="tag"><input type="checkbox" name="vibes" value="relax"><span>ゆったり</span></label>
+                    <label class="tag"><input type="checkbox" name="vibes" value="stylish"><span>おしゃれ</span></label>
+                    <label class="tag"><input type="checkbox" name="vibes" value="casual"><span>カジュアル</span></label>
+                    <label class="tag"><input type="checkbox" name="vibes" value="natural"><span>ナチュラル</span></label>
+                </div>
+                <input type="text" name="vibes_other" class="other-input" placeholder="その他（自由記入）">
+            </div>
+
+            <div class="form-group">
+                <label style="color:#ff6b6b;">〈NG条件〉</label>
+                <div class="tag-box">
+                    <label class="mini-tag"><input type="checkbox" name="ng[]" value="人混みが嫌"><span>人混みが嫌</span></label>
+                    <label class="mini-tag"><input type="checkbox" name="ng[]" value="動物が苦手"><span>動物が苦手</span></label>
+                    <label class="mini-tag"><input type="checkbox" name="ng[]" value="長距離歩けない"><span>長距離歩けない</span></label>
+                    <label class="mini-tag"><input type="checkbox" name="ng[]" value="高すぎる店はNG"><span>高すぎる店はNG</span></label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">プランを作成する！</button>
+        </form>
+    </div>
+</body>
+</html>

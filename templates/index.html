@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Trip4U</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="main-container">
+        <main>
+            <div class="illustration-container">
+                <img src="{{ url_for('static', filename='images/main_illust.png') }}"
+                     alt="Trip4U Illustration"
+                     class="main-img">
+            </div>
+
+            <div class="text-content">
+                <p>AIと一緒に最高の<br>わくわくプランをたてよう！</p>
+            </div>
+
+            <div class="button-container">
+                <!-- メイン導線 -->
+                <a href="/input" class="btn-primary">予定を立てる！</a>
+
+                <!-- サブ導線：履歴 -->
+                <div style="margin-top: 20px;">
+                    <a href="/history" class="btn-secondary">
+                        これまでの履歴を見る
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

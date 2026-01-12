@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+/* ============================= */
+/* 全体の設定                  */
+/* ============================= */
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background-color: #55d5d2;
+    color: #444;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* 上寄せに変更（長いコンテンツ対応） */
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 40px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 700px; /* 幅を広げて横並びに対応 */
+}
+
+h2 {
+    color: #ff9e22;
+    margin-bottom: 30px;
+    font-size: 24px;
+    border-bottom: 2px dashed #eee;
+    padding-bottom: 15px;
+}
+
+h3 {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: #444;
+    font-size: 18px;
+    text-align: left;
+    border-left: 5px solid #ff9e22;
+    padding-left: 10px;
+}
+
+/* ============================= */
+/* レイアウト調整用            */
+/* ============================= */
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+/* 横並びレイアウト（PC用） */
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+.form-row .form-group {
+    flex: 1; /* 均等に幅を取る */
+    margin-bottom: 0;
+}
+
+/* スマホなど画面が狭いときは縦並びに戻す */
+@media (max-width: 600px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    .form-row .form-group {
+        margin-bottom: 1.5rem;
+    }
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+    color: #444;
+    font-size: 0.95rem;
+}
+
+input[type="text"], select {
+    width: 100%;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    background: #f9f9f9;
+}
+
+input[type="text"]:focus, select:focus {
+    border-color: #ff9e22;
+    background: #fff;
+}
+
+/* ============================= */
+/* ボタン                      */
+/* ============================= */
+.btn {
+    margin-top: 30px;
+    background: linear-gradient(90deg, #ff9e22 0%, #ff6b22 100%);
+    color: white;
+    padding: 18px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    width: 100%;
+    max-width: 400px; /* ボタンが広がりすぎないように */
+    box-shadow: 0 8px 20px rgba(255, 107, 34, 0.4);
+    transition: all 0.2s ease;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+/* ============================= */
+/* タグ（共通デザイン）        */
+/* ============================= */
+.tag-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* 全ての選択肢をこのスタイルで統一 */
+.tag, .mini-tag {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+    user-select: none;
+}
+
+/* inputを隠す */
+.tag input, .mini-tag input {
+    display: none;
+}
+
+/* 見た目部分（span）のスタイル */
+.tag span, .mini-tag span {
+    display: block;
+    padding: 8px 16px;
+    border: 2px solid #eee;
+    background: #fff;
+    color: #666;
+    border-radius: 20px;
+    transition: all 0.2s;
+}
+
+/* ホバー時 */
+.tag:hover span, .mini-tag:hover span {
+    border-color: #ffcc80;
+    color: #ff9e22;
+}
+
+/* チェックされた時 */
+.tag input:checked + span, 
+.mini-tag input:checked + span {
+    background-color: #ff9e22;
+    border-color: #ff9e22;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(255, 158, 34, 0.3);
+}
+
+/* 自由記入欄の微調整 */
+.other-input {
+    margin-top: 10px !important;
+    font-size: 14px !important;
+    padding: 10px !important;
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>検索履歴 - trip4U</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>みんなの旅行プラン履歴 📖</h2>
+        <p>過去にAIが提案したプランの一覧です（DB連携中）</p>
+
+        {% for item in histories %}
+        <div class="result-box" style="margin-bottom: 30px;">
+            <h3>📍 {{ item.destination }} ({{ item.created_at.strftime('%Y/%m/%d') }})</h3>
+            <hr>
+            {{ item.plan_result | safe }}
+        </div>
+        {% else %}
+            <p>まだ履歴がありません。</p>
+        {% endfor %}
+
+        <a href="/" class="btn-secondary">トップに戻る</a>
+    </div>
+</body>
+</html>
