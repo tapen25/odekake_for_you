@@ -28,13 +28,13 @@
 <body>
     <div class="container">
         <h2>📝 計画を立てる</h2>
-
+        <h3 style="margin-top:20px;">必須条件</h3>
         <form action="/result" method="POST">
 
             <div class="form-row">
                 <div class="form-group">
                     <label>どこへ行きますか？</label>
-                    <input type="text" name="place" placeholder="例：鎌倉、海、カフェ" required>
+                    <input type="text" name="place" placeholder="例：鎌倉、海、カフェ、みんなの中間地点など" required>
                 </div>
                 <div class="form-group">
                     <label>誰と行きますか？</label>
@@ -88,7 +88,23 @@
                 </div>
                 <input type="text" name="attribute_other" class="other-input" placeholder="その他（自由記入）">
             </div>
-
+            <div class="form-group">
+                <label>〈メンバーの内訳〉</label>
+                <div class="tag-box">
+                    <label class="tag">
+                        <input type="checkbox" name="people_type[]" value="adult">
+                        <span>大人</span>
+                    </label>
+                    <label class="tag">
+                        <input type="checkbox" name="people_type[]" value="child">
+                        <span>子ども</span>
+                    </label>
+                    <label class="tag">
+                        <input type="checkbox" name="people_type[]" value="senior">
+                        <span>高齢者</span>
+                    </label>
+             </div>
+         </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>〈用途〉</label>
