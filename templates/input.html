@@ -6,23 +6,24 @@
     <title>プラン作成</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='input_style.css') }}">
     <script>
-        function updateStations() {
-            const num = document.getElementById('num_people').value;
-            const container = document.getElementById('stations_container');
-            container.innerHTML = ''; 
+    function updateStations() {
+        const num = document.getElementById('num_people').value;
+        const container = document.getElementById('stations_container');
+        container.innerHTML = ''; 
 
-            for (let i = 1; i <= num; i++) {
-                const div = document.createElement('div');
-                div.style.marginBottom = "10px";
-                div.innerHTML = `
-                    <input type="text" name="stations" placeholder="例：メンバー${i}の最寄駅" required style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 10px; font-size:14px;">
-                `;
-                container.appendChild(div);
-            }
+        for (let i = 1; i <= num; i++) {
+            const div = document.createElement('div');
+            div.style.marginBottom = "10px";
+            // 修正箇所: required を削除し、placeholderを変更
+            div.innerHTML = `
+                <input type="text" name="stations" placeholder="例：メンバー${i}の最寄駅（任意）" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 10px; font-size:14px;">
+            `;
+            container.appendChild(div);
         }
-        window.onload = function() {
-            updateStations();
-        };
+    }
+    window.onload = function() {
+        updateStations();
+    };
     </script>
 </head>
 <body>
@@ -31,7 +32,7 @@
         <h3 style="margin-top:20px;">必須条件</h3>
         <form action="/result" method="POST">
 
-            <div class="form-row">
+            
                 <div class="form-group">
                     <label>どこへ行きますか？</label>
                     <input type="text" name="place" placeholder="例：鎌倉、海、カフェ、みんなの中間地点など" required>
@@ -40,7 +41,7 @@
                     <label>誰と行きますか？</label>
                     <input type="text" name="partner" placeholder="例：友達、家族、恋人" required>
                 </div>
-            </div>
+            
 
             <div class="form-row">
                 <div class="form-group">
@@ -69,13 +70,19 @@
                     <option value="4">4人</option>
                     <option value="5">5人以上</option>
                 </select>
-                
-                <div id="stations_container" style="margin-top:15px; background:#f0ffff; padding:15px; border-radius:15px;">
-                    </div>
             </div>
 
             <h3>✨ こだわり条件</h3>
+            <div class="form-group">
+                <label>〈メンバーの最寄駅〉</label>
+                <p style="font-size:12px; color:#777; margin-bottom:8px;">
+                    ※複数人で行く場合、各メンバーの最寄駅を入力してください。<br>
+                </p>
 
+                <div id="stations_container"
+                    style="background:#f0ffff; padding:15px; border-radius:15px;">
+                </div>
+            </div>
             <div class="form-group">
                 <label>〈年齢・属性〉</label>
                 <div class="tag-box">

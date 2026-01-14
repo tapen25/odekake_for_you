@@ -54,32 +54,29 @@ def result():
     meal = request.form.get('meal')
     meal_genre = request.form.get('meal_genre')
     attribute_other = request.form.get('attribute_other')
-    
-    # HTML側には 'purpose_other' がないようですが、念のため残しておいてもエラーにはなりません
     purpose_other = request.form.get('purpose_other') 
-    
-    # ★修正: 自由記入は getlist ではなく get で取得するのが一般的
     vibes_other = request.form.get('vibes_other')
 
     # 日時と予算
     date_time_input = request.form.get('date_time')
     budget_val = request.form.get('budget')
 
-    # リスト形式（チェックボックスなど）
-    stations = request.form.getlist('stations')
+    # リスト形式データの取得
+    raw_stations = request.form.getlist('stations') # ★一度そのまま取得
     attributes = request.form.getlist('attribute')
     purposes = request.form.getlist('purpose')
     access = request.form.getlist('access')
     vibes = request.form.getlist('vibes')
     mobilities = request.form.getlist('mobility[]') 
     ng_conditions = request.form.getlist('ng[]')
-
-    # ★追加：ここが今回HTMLに追加された「メンバー内訳」です
     people_types = request.form.getlist('people_type[]')
-
 
     # --- 2. データの整形 ---
     
+    # ★変更点1：駅名リストから空文字（未入力）を除去
+    # strip()を使うことで、スペースのみの入力も弾きます
+    stations = [s for s in raw_stations if s.strip()]
+
     # 日時のフォーマット整形
     formatted_date = "未定"
     if date_time_input:
@@ -100,41 +97,45 @@ def result():
     }
     budget_str = budget_map.get(budget_val, "指定なし")
 
-    # ★追加：メンバー内訳を日本語に変換してまとめる
+    # メンバー内訳を日本語に変換
     pt_map = {"adult": "大人", "child": "子ども", "senior": "高齢者"}
     people_types_str = ", ".join([pt_map.get(p, p) for p in people_types])
 
-
     # 情報を文字列に結合
-    stations_str = ", ".join([s for s in stations if s])
+    stations_str = ", ".join(stations) if stations else "指定なし" # ★空の場合の文言
     attributes_str = ", ".join(attributes) + (f" ({attribute_other})" if attribute_other else "")
     purposes_str = ", ".join(purposes) + (f" ({purpose_other})" if purpose_other else "")
-    
-    # ★修正: vibes_other もAIに伝わるように連結に追加
     vibes_str = ", ".join(vibes) + (f" ({vibes_other})" if vibes_other else "")
-    
     ng_str = ", ".join(ng_conditions)
     mobility_str = ", ".join(mobilities)
     access_str = ", ".join(access)
 
-    # ルート表示用のHTML指示
-    route_instruction = """
-    【集合場所へのルート表示】
-    メンバーそれぞれの出発駅が異なるため、以下のHTML構造を使って表示してください。
-    人数（駅数）分だけ <div class="route-card"> を繰り返して作成してください。
-    
-    <div class="route-container">
-        <div class="route-card">
-            <h4>メンバー（最寄駅名）</h4>
-            <p>ここにルート、所要時間、運賃を記載</p>
+    # ★変更点2：駅入力の有無でAIへの指示（route_instruction）を分岐させる
+    if stations:
+        # 駅入力がある場合：アクセス経路を表示させる指示
+        route_instruction = """
+        【集合場所へのルート表示】
+        メンバーそれぞれの出発駅が異なるため、以下のHTML構造を使って表示してください。
+        入力された最寄駅の数だけ <div class="route-card"> を作成してください。
+        
+        <div class="route-container">
+            <div class="route-card">
+                <h4>メンバー（最寄駅名）</h4>
+                <p>ここにルート、所要時間、運賃を記載</p>
+            </div>
         </div>
-    </div>
-    
-    ※その下に、全員が合流する「集合場所」と「集合時間」を明記してください。
-    """
+        
+        ※その下に、全員が合流する「集合場所」と「集合時間」を明記してください。
+        """
+    else:
+        # 駅入力がない場合：集合場所からのスタートにする指示
+        route_instruction = """
+        【集合場所の提案】
+        最寄駅の指定がないため、個別の移動ルートは省略してください。
+        全員が合流しやすい「集合場所」と「集合時間」の提案からプランを開始してください。
+        """
 
     # --- 3. プロンプト作成 ---
-    # ★追加: 「メンバー構成詳細」として people_types_str を追加しました
     prompt = f"""
     あなたはプロのトラベルプランナーです。以下の条件で最高のお出かけプランを作成してください。
 
@@ -159,9 +160,9 @@ def result():
     - {ng_str}
 
     【重要：店舗・スポットの選定ルール】
-    1. **必ず「実在する店舗・場所」のみ**を提案してください。架空の店名は禁止です。
+    1. **必ず「実在する店（飲食店など）や・場所」のみ**を提案してください。架空の店名は禁止です。
     2. 提案する全てのスポット（集合場所、観光地、飲食店など）について、**Googleマップの検索用URL**を埋め込んでください。
-    3. URLの形式は `https://www.google.com/maps/search/?api=1&query=スポット名+エリア名` を使用してください。
+    3. URLの形式は `https://www.google.com/maps/search/?api=1&query=スポット名` としてください。
     4. 「メンバー構成詳細」や「NG条件」を考慮し、例えば子どもや高齢者がいる場合は歩きやすさや休憩場所、子ども向け施設などを考慮してください。
 
     【出力形式の指示】

@@ -6,6 +6,8 @@
     <title>プラン決定！</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <style>
         /* 全体の設定 */
@@ -27,6 +29,8 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.1);
             width: 100%;
             max-width: 800px;
+            /* 画像化するときに見切れさせない設定 */
+            overflow: visible; 
         }
 
         h2 {
@@ -42,7 +46,6 @@
             line-height: 1.8;
             font-size: 16px;
         }
-        /* JSでテキスト取得用にIDを追加 */
         #plan-content h3 {
             background: #fffae6;
             padding: 10px 15px;
@@ -123,8 +126,10 @@
 
         /* 各SNSの色 */
         .btn-line { background-color: #06C755; }
-        .btn-copy { background-color: #555; } /* インスタ用（コピー） */
+        .btn-copy { background-color: #555; }
         .btn-native { background: linear-gradient(90deg, #ff9e22 0%, #ff6b22 100%); }
+        /* ★追加: 画像保存ボタンの色 */
+        .btn-image { background-color: #3b5998; } 
 
         /* 戻るボタン */
         .btn-back {
@@ -141,26 +146,20 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            
             width: 60px;
             height: 60px;
             background: linear-gradient(90deg, #ff9e22 0%, #ff6b22 100%);
             color: white;
-            
-            /* 文字（アイコン）の位置調整 */
             display: flex;
             justify-content: center;
             align-items: center;
-            
             border-radius: 50%;
             text-decoration: none;
-            font-size: 30px; /* アイコンサイズ */
-            
+            font-size: 30px;
             box-shadow: 0 5px 15px rgba(255, 107, 34, 0.4);
             z-index: 999;
             transition: all 0.3s;
         }
-
         #home-btn:hover {
             transform: scale(1.1);
             box-shadow: 0 8px 20px rgba(255, 107, 34, 0.6);
@@ -168,23 +167,29 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="capture-target">
         <h2>🎉 {{ place }} のお出かけプラン</h2>
-        <p>リンクテキストをタップするとGoogleマップが開きます</p>
+        <p style="text-align: center; color: #888; font-size: 0.9em;">
+            リンクテキストをタップするとGoogleマップが開きます
+        </p>
         
         <div class="result-box" id="plan-content">
             {{ plan | safe }}
         </div>
 
-        <div class="share-section">
-            <span class="share-title">このプランを共有する</span>
+        <div class="share-section" data-html2canvas-ignore="true"> 
+            <span class="share-title">このプランを保存・共有する</span>
             <div class="share-buttons">
+                <button onclick="saveAsImage()" class="btn-share btn-image">
+                    <i class="fas fa-image"></i> 画像保存
+                </button>
+
                 <button onclick="shareLine()" class="btn-share btn-line">
-                    <i class="fab fa-line"></i> LINEで送る
+                    <i class="fab fa-line"></i> LINE
                 </button>
                 
                 <button onclick="copyToClipboard()" class="btn-share btn-copy">
-                    <i class="far fa-copy"></i> テキストをコピー
+                    <i class="far fa-copy"></i> コピー
                 </button>
 
                 <button onclick="nativeShare()" class="btn-share btn-native" id="native-share-btn">
@@ -193,54 +198,88 @@
             </div>
         </div>
 
-        <a href="/input" class="btn-back">条件を変えてもう一度</a>
+        <a href="/input" class="btn-back" data-html2canvas-ignore="true">条件を変えてもう一度</a>
     </div>
-    <a href="/" id="home-btn" title="トップに戻る">🏠</a>
+    <a href="/" id="home-btn" title="トップに戻る" data-html2canvas-ignore="true">🏠</a>
 
     <script>
-        // プランのテキストを取得する関数
-        function getPlanText() {
-            const placeName = "{{ place }}";
-            const content = document.getElementById('plan-content').innerText; // HTMLタグを除去したテキストを取得
-            return `【${placeName}のお出かけプラン】\n\n${content}`;
+        // --- ★追加: 画像として保存する関数 ---
+        function saveAsImage() {
+            const element = document.getElementById('capture-target');
+            
+            // ユーザーへのフィードバック
+            const btn = document.querySelector('.btn-image');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
+
+            html2canvas(element, {
+                scale: 2, // 高解像度（Retina対応）
+                backgroundColor: "#ffffff", // 背景色を白に固定
+                useCORS: true // 外部画像（地図アイコンなど）がある場合の対応
+            }).then(canvas => {
+                // 画像データURLを取得
+                const imgData = canvas.toDataURL("image/png");
+
+                // ダウンロード用リンクを作成してクリックさせる
+                const link = document.createElement('a');
+                link.href = imgData;
+                link.download = 'trip_plan.png'; // ファイル名
+                link.click();
+
+                // ボタンを元に戻す
+                btn.innerHTML = originalText;
+                
+                // iPhoneなどは自動ダウンロードされない場合があるのでアラート
+                if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                    // スマホの場合、画像を表示して長押し保存を促す方が確実な場合がありますが
+                    // 最近のiOSはdownload属性で「表示→保存」のフローに行けることが多いです。
+                    // もし反応しない場合は、別タブで開く処理が必要です。
+                }
+            }).catch(err => {
+                console.error("画像化エラー:", err);
+                alert("画像の生成に失敗しました。");
+                btn.innerHTML = originalText;
+            });
         }
 
-        // 1. LINEで送る
+        // --- 既存の関数 ---
+
+        function getPlanText() {
+            const placeName = "{{ place }}";
+            const content = document.getElementById('plan-content').innerText;
+            return `【${placeName}へのお出かけプラン】\n\n${content}`;
+        }
+
         function shareLine() {
             const text = getPlanText();
-            // URLエンコードしてLINEのスキームに渡す
             const url = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`;
             window.open(url, '_blank');
         }
 
-        // 2. クリップボードにコピー (Instagram用)
         function copyToClipboard() {
             const text = getPlanText();
             navigator.clipboard.writeText(text).then(() => {
-                alert("プランをコピーしました！\nInstagramやメモ帳に貼り付けてください✨");
+                alert("プランをコピーしました！");
             }).catch(err => {
-                console.error('コピー失敗:', err);
                 alert("コピーできませんでした。");
             });
         }
 
-        // 3. Web Share API (スマホのネイティブ共有)
         function nativeShare() {
             const text = getPlanText();
             if (navigator.share) {
                 navigator.share({
                     title: 'お出かけプラン',
                     text: text,
-                })
-                .catch((error) => console.log('共有キャンセル', error));
+                }).catch((error) => console.log('共有キャンセル', error));
             } else {
-                alert("お使いのブラウザではこの機能は使えません。\nLINEボタンかコピーボタンを使ってください。");
+                alert("お使いのブラウザではこの機能は使えません。");
             }
         }
 
-        // PCなどWeb Share API非対応の場合は「共有ボタン」を隠す処理（任意）
         if (!navigator.share) {
-            document.getElementById('native-share-btn').style.display = 'none';
+            const btn = document.getElementById('native-share-btn');
+            if(btn) btn.style.display = 'none';
         }
     </script>
 </body>
